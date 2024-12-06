@@ -92,3 +92,84 @@ Send the following JSON object in the request body:
 - Use a tool like Postman or cURL to test the endpoint.
 
 ---
+
+## Endpoints
+
+### 2. **Login User**
+
+#### Endpoint
+`POST /users/login`
+
+#### Description
+Authenticates a user by verifying their email and password, and returns a JSON Web Token (JWT) for authorization.
+
+#### Request Body
+Send the following JSON object in the request body:
+
+| Field       | Type   | Required | Description                           |
+|-------------|--------|----------|---------------------------------------|
+| `email`     | String | Yes      | A valid email address.                |
+| `password`  | String | Yes      | The user's password.                  |
+
+#### Example Request
+```json
+{
+  "email": "john.doe@example.com",
+  "password": "securePassword123"
+}
+```
+
+#### Responses
+
+##### Success (200 OK)
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NGUxM2VhNTM5MjFiNmRjMzYwMmI0MDAiLCJpYXQiOjE2ODY2NTI5NzUsImV4cCI6MTY4NjY1NjU3NX0.F5zEJ-UOcZ-0r9YeiJvNHic7tpDqq5w-WdpOBHftH1c",
+  "user": {
+    "_id": "64e13ea53921b6dc3602b400",
+    "fullname": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "john.doe@example.com",
+    "socketId": null
+  }
+}
+```
+
+##### Invalid Credentials (401 Unauthorized)
+```json
+{
+  "message": "Invalid email or password"
+}
+```
+
+##### Validation Error (400 Bad Request)
+```json
+{
+  "errors": [
+    {
+      "msg": "Invalid email",
+      "param": "email",
+      "location": "body"
+    }
+  ]
+}
+```
+
+##### Server Error (500 Internal Server Error)
+```json
+{
+  "error": "Internal Server Error"
+}
+```
+
+---
+
+### Usage Notes
+- Ensure `process.env.JWT_SECRET` is set in your environment for token generation.
+- Use a tool like Postman or cURL to test the endpoint.
+- The response includes a JWT (`token`) for authenticating subsequent API requests.
+
+---
+
