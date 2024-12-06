@@ -5,7 +5,7 @@ connectToDb();
 const userRoutes = require("./routes/user.routes");
 
 app.use(express.json());
-app.user(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }));
 
 app.get('/', (req, res)=>{
     res.send('hello world')
