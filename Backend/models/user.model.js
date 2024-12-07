@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema({
   fullname: {
     firstname: {
       type: String,
-      require: true,
+      required: true,
       minlength: [3, "Frist name must be 3 charcter long"],
     },
     lastname: {
@@ -14,12 +14,12 @@ const userSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    require: true,
+    required: true,
     unique: true,
   },
   password: {
     type: String,
-    require: true,
+    required: true,
     select:false
   },
   socketId: {
