@@ -261,3 +261,70 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 - The `logout` endpoint will store blacklisted tokens in `blacklistTokenModel`, preventing further use.
 - Use tools like Postman or cURL for testing.
 
+### 5. **Register Captain Endpoint**
+
+#### Endpoint
+`POST /captain/register`
+
+#### Description
+Registers a new capatain by creating an account with their first name, last name, email, and password,color,plate,capacity,vehicleType.
+
+#### Request Body
+Send the following JSON object in the request body:
+
+| Field         | Type   | Required | Description                           |
+|---------------|--------|----------|---------------------------------------|
+| `fullname`    | Object | Yes      | Contains `firstname` and `lastname`. |
+| `fullname.firstname` | String | Yes      | captain's first name (min. 3 characters). |
+| `fullname.lastname`  | String | No       | captain's last name.                    |
+| `email`       | String | Yes      | A valid, unique email address.        |
+| `password`    | String | Yes      | captain's password (min. 6 characters).  |
+| `vehicle`    | Object | Yes      | Contains `color` and `plate` and `capacity` and `vehicleType`. |
+| `vehicle.color` | String | Yes      | Color must be at least 3 charcter long |
+| `vehicle.plate`  | String |  Yes       | Plate must be at least 4 charcter long                    |
+| `vehicle.capacity` | number | Yes      | Capacity must be at least 1 charcter long |
+| `vehicle.vehicleType`  | String |  Yes       | enum:['car','auto','bike']                    |
+#### Example Request
+```json
+{
+  "fullname": {
+    "firstname": "Priya",
+    "lastname": "Sharma"
+  },
+  "email": "priyasharma@example.com",
+  "password": "hashed_password", 
+  "vehicle": {
+    "color": "Blue",
+    "plate": "MH12CD5678",
+    "capacity": 5,
+    "vehicleType": "car"
+  }
+  
+}
+```
+
+#### Responses
+
+##### Success (201 Created)
+```json
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzU1MTBhMDBjNzBkNTQ4OWJjODgwMzMiLCJpYXQiOjE3MzM2MjgwNjQsImV4cCI6MTczMzcxNDQ2NH0.Rd_49vGJUmaaiv8ipJ7ZlU97Q0etJ5V_390LJ5LMfv4",
+    "captain": {
+        "fullname": {
+            "firstname": "Priya",
+            "lastname": "Sharma"
+        },
+        "email": "priyasharma@example.com",
+        "password": "$2b$10$JYtmquYCEk7./NRXwMDWe..ER/EdaYlm7zuWMZ8EOzdSe.NDuqJFW",
+        "status": "active",
+        "vehicle": {
+            "color": "Blue",
+            "plate": "MH12CD5678",
+            "capacity": 5,
+            "vehicleType": "car"
+        },
+        "_id": "675510a00c70d5489bc88033",
+        "__v": 0
+    }
+}
+```
