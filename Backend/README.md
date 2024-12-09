@@ -328,3 +328,173 @@ Send the following JSON object in the request body:
     }
 }
 ```
+### 2. **Login Captain**
+
+#### Endpoint
+`POST /captain/login`
+
+#### Description
+Authenticates a captain by verifying their email and password, and returns a JSON Web Token (JWT) for authorization.
+
+#### Request Body
+Send the following JSON object in the request body:
+
+| Field       | Type   | Required | Description                           |
+|-------------|--------|----------|---------------------------------------|
+| `email`     | String | Yes      | A valid email address.                |
+| `password`  | String | Yes      | The user's password.                  |
+
+#### Example Request
+```json
+{
+     "email": "priyasharma@example.com",
+  "password": "hashed_password"
+}
+```
+
+#### Responses
+
+##### Success (200 OK)
+```json
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzU0MDY5YjFjOWI2YmRjOTU0MGE4MWMiLCJpYXQiOjE3MzM3Mjk4MDEsImV4cCI6MTczMzgxNjIwMX0.QYrc3d2MqmOm2B_DK790O5Un9Ruf0uprbIt8GERSmic",
+    "captain": {
+        "fullname": {
+            "firstname": "Priya",
+            "lastname": "Sharma"
+        },
+        "vehicle": {
+            "color": "Blue",
+            "plate": "MH12CD5678",
+            "capacity": 5,
+            "vehicleType": "car"
+        },
+        "_id": "6754069b1c9b6bdc9540a81c",
+        "email": "priyasharma@example.com",
+        "password": "$2b$10$e5QevDYR7KY4xPu.rbx5hekw/vpD.V/fxVAkpGWQIGnHHG1tIIHTa",
+        "status": "active",
+        "__v": 0
+    }
+}
+```
+
+##### Invalid Credentials (401 Unauthorized)
+```json
+{
+  "message": "Invalid email or password"
+}
+```
+
+##### Validation Error (400 Bad Request)
+```json
+{
+  "errors": [
+    {
+      "msg": "Invalid email",
+      "param": "email",
+      "location": "body"
+    }
+  ]
+}
+```
+
+##### Server Error (500 Internal Server Error)
+```json
+{
+  "error": "Internal Server Error"
+}
+```
+ 
+ 
+### 3. **Get Captain Profile**
+
+#### Endpoint
+`GET /captain/profile`
+
+#### Description
+Retrieves the profile information of the currently authenticated captain.
+
+#### Authentication
+Requires a valid JSON Web Token (JWT) to be provided via cookies or the `Authorization` header.
+
+#### Headers
+| Key             | Value             | Required | Description                           |
+|------------------|-------------------|----------|---------------------------------------|
+| `Authorization` | `Bearer <token>`  | Yes      | The JWT obtained during login.        |
+
+#### Example Request (Using Authorization Header)
+```bash
+GET /capatian/profile HTTP/1.1
+Host: localhost:3000
+Authorization:bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzU0MDY5YjFjOWI2YmRjOTU0MGE4MWMiLCJpYXQiOjE3MzM2MzAyNzQsImV4cCI6MTczMzcxNjY3NH0.2vqx9lQp-Vng0S34nw590g1eA4sJKEQnDblSkZNn-0Q
+```
+
+#### Example Response (200 OK)
+```json
+{
+    "fullname": {
+        "firstname": "Priya",
+        "lastname": "Sharma"
+    },
+    "vehicle": {
+        "color": "Blue",
+        "plate": "MH12CD5678",
+        "capacity": 5,
+        "vehicleType": "car"
+    },
+    "_id": "6754069b1c9b6bdc9540a81c",
+    "email": "priyasharma@example.com",
+    "status": "active",
+    "__v": 0
+}
+```
+
+#### Unauthorized Response (401 Unauthorized)
+```json
+{
+  "error": "Authentication required"
+}
+```
+
+---
+
+### 4. **Logout User**
+
+#### Endpoint
+`GET /captain/logout`
+
+#### Description
+Logs out the currently authenticated user by clearing the token cookie and blacklisting the token.
+
+#### Authentication
+Requires a valid JSON Web Token (JWT) to be provided via cookies or the `Authorization` header.
+
+#### Headers
+| Key             | Value             | Required | Description                           |
+|------------------|-------------------|----------|---------------------------------------|
+| `Authorization` | `Bearer <token>`  | Yes      | The JWT obtained during login.        |
+
+#### Example Request (Using Authorization Header)
+```bash
+GET /captain/logout HTTP/1.1
+Host: localhost:3000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+#### Example Response (200 OK)
+```json
+{
+  "message": "Logged Out"
+}
+```
+
+#### Unauthorized Response (401 Unauthorized)
+```json
+{
+  "error": "Authentication required"
+}
+```
+
+ 
+
+ 
