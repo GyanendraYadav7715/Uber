@@ -1,6 +1,7 @@
 var createError = require('http-errors');
 const express = require('express');
 var path = require('path');
+const cors = require("cors");
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 require("dotenv").config();
@@ -11,6 +12,12 @@ const userRoutes = require("./routes/user.routes");
 const captainRoutes = require("./routes/captain.routes")
 
 const app = express();
+
+app.use(cors({
+  origin: "http://localhost:5173", // Allow frontend origin
+  methods: "GET,POST,PUT,DELETE",
+  allowedHeaders: "Content-Type,Authorization"
+}));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

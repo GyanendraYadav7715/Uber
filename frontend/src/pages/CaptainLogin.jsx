@@ -75,7 +75,7 @@ const CaptainLogin = () => {
             <Button
               text="Log In"
               type="submit"
-              className="w-full bg-orange-500"
+              className="w-full bg-orange-600"
             />
           </form>
 

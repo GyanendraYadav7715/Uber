@@ -4,15 +4,21 @@ import Button from "../components/Button";
 import Google from "../components/Google";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import Logo from "../components/logo"
+import Logo from "../components/logo";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
 
 const UserLogin = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
   };
 
   const handleSubmit = async (e) => {
@@ -25,26 +31,23 @@ const UserLogin = () => {
     }
 
     try {
-      await axios.post("https://your-api-url.com/login", formData);
+      await axios.post(`${import.meta.env.VITE_BASE_URL}/users/login`, formData);
       alert("Login Successful!");
     } catch (err) {
-      setError(
-        err.response?.data?.message || "Something went wrong. Please try again."
-      );
+      setError(err.response?.data?.message || "Something went wrong. Please try again.");
     }
   };
 
   return (
-    <div className="flex flex-col max-h-screen  bg-gray-100 gap-20">
+    <div className="flex flex-col max-h-screen bg-gray-100 gap-20">
       <Logo />
-      <div className="flex items-center justify-center px-4 ">
+      <div className="flex items-center justify-center px-4">
         <div className="w-full max-w-md bg-white shadow-2xl rounded-xl p-6 sm:p-8">
           <h2 className="text-2xl font-bold text-center text-gray-900 mb-6">
             Log In as User
           </h2>
 
           <div className="items-center flex justify-center">
-            {" "}
             <Google />
           </div>
 
@@ -62,21 +65,30 @@ const UserLogin = () => {
               value={formData.email}
               onChange={handleChange}
             />
-            <InputField
-              type="password"
-              name="password"
-              placeholder="Password"
-              value={formData.password}
-              onChange={handleChange}
-            />
+            <div className="relative">
+              <InputField
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+              />
+              <button
+                type="button"
+                onClick={togglePasswordVisibility}
+                className="absolute inset-y-0 right-3 flex items-center text-gray-600"
+              >
+                {showPassword ? (
+                  <FaRegEye className="h-5 w-5" />
+                ) : (
+                  <FaRegEyeSlash className="h-5 w-5" />
+                )}
+              </button>
+            </div>
             {error && (
               <p className="text-red-500 text-sm text-center">{error}</p>
             )}
-            <Button
-              text="Log In"
-              type="submit"
-              className="w-full bg-gray-700"
-            />
+            <Button text="Log In" type="submit" className="w-full bg-black" />
           </form>
 
           <p className="text-center text-sm mt-4 text-gray-600">
