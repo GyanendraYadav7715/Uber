@@ -1,16 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import InputField from "../components/InputField";
 import Button from "../components/Button";
 import Google from "../components/Google";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Logo from "../components/logo";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
+import { UserContext } from "../context/UserContext";
 
 const UserLogin = () => {
+  const navigate = useNavigate();
+  const { user, setUser } = useContext(UserContext) || {};
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+
+  // Load user from localStorage on mount
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser && setUser(JSON.parse(storedUser));
+    }
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -31,10 +42,24 @@ const UserLogin = () => {
     }
 
     try {
-      await axios.post(`${import.meta.env.VITE_BASE_URL}/users/login`, formData);
-      alert("Login Successful!");
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/users/login`, // Fixed URL
+        formData
+      );
+
+      if (response.status === 200) {
+        const data = response.data;
+        if (setUser) {
+          setUser(data.user);
+        }
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        navigate("/Home");
+      }
     } catch (err) {
-      setError(err.response?.data?.message || "Something went wrong. Please try again.");
+      setError(
+        err.response?.data?.message || "Something went wrong. Please try again."
+      );
     }
   };
 
@@ -72,6 +97,7 @@ const UserLogin = () => {
                 placeholder="Password"
                 value={formData.password}
                 onChange={handleChange}
+                className="pr-10"
               />
               <button
                 type="button"
