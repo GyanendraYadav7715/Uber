@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@font-face {
+    font-family:uber;
+    src: url('/frontend/src/font/uberfont.woff');
+}
+* {
+    color: black;
+    font-family: "Parkinsans", sans-serif;
+    /* font-family: uber; */
+    font-optical-sizing: auto;
+
+    font-style: normal;
+}
