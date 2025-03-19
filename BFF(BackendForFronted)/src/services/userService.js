@@ -1,6 +1,6 @@
 const axios = require("axios");
 
-const BASE_BACKEND_URL = process.env.BACKEND_URL || "http://localhost:8080";
+const BASE_BACKEND_URL = process.env.BACKEND_URL || "http://localhost:4000";
 
 exports.registerUser = async (req, res) => {
     try {
