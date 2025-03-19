@@ -3,10 +3,11 @@ import InputField from "../components/InputField";
 import Button from "../components/Button";
 import Google from "../components/Google";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+ 
 import Logo from "../components/logo";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
 import { UserContext } from "../context/UserContext";
+import{loginUser} from "../services/AuthService";
 
 const UserLogin = () => {
   const navigate = useNavigate();
@@ -42,10 +43,7 @@ const UserLogin = () => {
     }
 
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/users/login`, // Fixed URL
-        formData
-      );
+      const response = await loginUser(formData);
 
       if (response.status === 200) {
         const data = response.data;

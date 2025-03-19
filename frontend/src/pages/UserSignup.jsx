@@ -1,9 +1,10 @@
-import axios from "axios";
+ 
 import { useState, useContext } from "react";
 import InputField from "../components/InputField";
 import Logo from "../components/logo";
 import { Link, useNavigate } from "react-router-dom";
 import { UserContext } from "../context/UserContext"; // ✅ Correct import
+import { registerUser } from "../services/AuthService";
 
 export default function UserSignup() {
   const navigate = useNavigate();
@@ -43,24 +44,15 @@ export default function UserSignup() {
     }
 
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/users/register`,
-        formData
-      );
-
+      const response = await registerUser(formData);
       if (response.status === 201) {
-        const data = response.data;
-        setUser(data.user);
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user));
+        setUser(response.data);
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("user", JSON.stringify(response.data.user));
         navigate("/Home");
       }
-
-      alert("User Registered Successfully!");
     } catch (err) {
-      setError(
-        err.response?.data?.message || "Something went wrong. Please try again."
-      );
+      setError(err.response?.data?.message || "Something went wrong.");
     }
   };
 
