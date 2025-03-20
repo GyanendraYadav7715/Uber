@@ -1,19 +1,28 @@
-import React, { useState } from "react";
-import InputField from "../components/InputField";
+import React, { useState,useContext } from "react";
+import { Link,useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import Google from "../components/Google";
-import { Link } from "react-router-dom";
-import axios from "axios";
+import InputField from "../components/InputField";
 import Logo from "../components/logo";
+import ShowPasswordToggle from "../components/ShowPasswordToggle";
+import { loginCaptain } from "../services/AuthService";
+import {CaptainContext} from "../context/CaptainContext"
 
 const CaptainLogin = () => {
+   const navigate = useNavigate();
+   const { captain, setCaptain } = useContext(CaptainContext) || {};
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -25,8 +34,16 @@ const CaptainLogin = () => {
     }
 
     try {
-      await axios.post("https://your-api-url.com/login", formData);
-      alert("Login Successful!");
+      const response = await loginCaptain(formData);
+      if (response.status === 200) {
+        const data = response.data;
+        if (setCaptain) {
+          setCaptain(data.user);
+        }
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        navigate("/CaptainHome");
+      }
     } catch (err) {
       setError(
         err.response?.data?.message || "Something went wrong. Please try again."
@@ -62,13 +79,19 @@ const CaptainLogin = () => {
               value={formData.email}
               onChange={handleChange}
             />
-            <InputField
-              type="password"
-              name="password"
-              placeholder="Password"
-              value={formData.password}
-              onChange={handleChange}
-            />
+            <div className="relative">
+              <InputField
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+                className="pr-10"
+              />
+              <ShowPasswordToggle
+                showPassword={showPassword}
+                toggle={togglePasswordVisibility}/>
+            </div>
             {error && (
               <p className="text-red-500 text-sm text-center">{error}</p>
             )}

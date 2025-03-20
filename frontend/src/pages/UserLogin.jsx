@@ -1,13 +1,14 @@
-import React, { useState, useContext, useEffect } from "react";
-import InputField from "../components/InputField";
+import React, { useContext, useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+
 import Button from "../components/Button";
 import Google from "../components/Google";
-import { Link, useNavigate } from "react-router-dom";
- 
+import InputField from "../components/InputField";
 import Logo from "../components/logo";
-import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
+
+import ShowPasswordToggle from "../components/ShowPasswordToggle";
 import { UserContext } from "../context/UserContext";
-import{loginUser} from "../services/AuthService";
+import { loginUser } from "../services/AuthService";
 
 const UserLogin = () => {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ const UserLogin = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+ 
 
   // Load user from localStorage on mount
   useEffect(() => {
@@ -24,10 +26,12 @@ const UserLogin = () => {
     }
   }, []);
 
+ 
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  }
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
@@ -52,7 +56,7 @@ const UserLogin = () => {
         }
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
-        navigate("/Home");
+        navigate("/UserHome");
       }
     } catch (err) {
       setError(
@@ -97,17 +101,10 @@ const UserLogin = () => {
                 onChange={handleChange}
                 className="pr-10"
               />
-              <button
-                type="button"
-                onClick={togglePasswordVisibility}
-                className="absolute inset-y-0 right-3 flex items-center text-gray-600"
-              >
-                {showPassword ? (
-                  <FaRegEye className="h-5 w-5" />
-                ) : (
-                  <FaRegEyeSlash className="h-5 w-5" />
-                )}
-              </button>
+              <ShowPasswordToggle
+                showPassword={showPassword}
+                toggle={togglePasswordVisibility}
+              />
             </div>
             {error && (
               <p className="text-red-500 text-sm text-center">{error}</p>

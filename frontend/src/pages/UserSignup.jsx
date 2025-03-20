@@ -5,6 +5,7 @@ import Logo from "../components/logo";
 import { Link, useNavigate } from "react-router-dom";
 import { UserContext } from "../context/UserContext"; // ✅ Correct import
 import { registerUser } from "../services/AuthService";
+import ShowPasswordToggle from "../components/ShowPasswordToggle";
 
 export default function UserSignup() {
   const navigate = useNavigate();
@@ -20,6 +21,7 @@ export default function UserSignup() {
   });
 
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -35,10 +37,16 @@ export default function UserSignup() {
     });
   };
 
+  const togglePasswordVisibility = () => {  
+    setShowPassword((prev) => !prev);
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!formData.email || !formData.password || !formData.fullname.firstname) {
+     if (
+        !formData.email ||
+        !formData.password ||
+        !formData.fullname.firstname)
+    {
       setError("All fields are required");
       return;
     }
@@ -49,10 +57,12 @@ export default function UserSignup() {
         setUser(response.data);
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("user", JSON.stringify(response.data.user));
-        navigate("/Home");
+        navigate("/UserHome");
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Something went wrong.");
+      setError(
+        err.response?.data?.message || "Something went wrong.Please try again."
+      );
     }
   };
 
@@ -88,13 +98,20 @@ export default function UserSignup() {
               value={formData.email}
               onChange={handleChange}
             />
-            <InputField
-              type="password"
-              name="password"
-              placeholder="Password"
-              value={formData.password}
-              onChange={handleChange}
-            />
+            <div className="relative">
+              <InputField
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+                className="pr-10"
+              />
+              <ShowPasswordToggle
+                showPassword={showPassword}
+                toggle={togglePasswordVisibility}
+              />
+            </div>
             {error && (
               <p className="text-red-500 text-sm text-center">{error}</p>
             )}

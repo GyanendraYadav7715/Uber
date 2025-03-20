@@ -1,53 +1,91 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import axios from "axios";
 import InputField from "../components/InputField";
 import Logo from "../components/logo";
-import { Link } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
+import ShowPasswordToggle from "../components/ShowPasswordToggle";
+import { CaptainContext } from "../context/CaptainContext";
+import { registerCaptain } from "../services/AuthService";
 
 export default function CaptainSignup() {
+  const navigate = useNavigate();
+  const { captain, setCaptain } = useContext(CaptainContext) || {};
+
   const [formData, setFormData] = useState({
-    firstname: "",
-    lastname: "",
+    fullname: {
+      firstname: "",
+      lastname: "",
+    },
     email: "",
     password: "",
-    vehicleColor: "",
-    vehiclePlate: "",
-    vehicleCapacity: "",
-    vehicleType: "car",
+    vehicle: { 
+      color: "",
+      plate: "",
+      capacity: "",
+      vehicleType: "",
+    },
   });
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-   setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-      if (
-        !formData.email ||
-        !formData.password ||
-        !formData.firstname ||
-        !formData.vehicleCapacity ||
-        !formData.vehicleType ||
-        !formData.vehiclePlate
-        
+    setFormData((prev) => {
+      if (name === "firstname" ||
+          name === "lastname") {
+        return {
+          ...prev,
+          fullname: { ...prev.fullname, [name]: value },
+        };
+      } else if (
+        name === "color" ||
+        name ==="plate" ||
+        name === "capacity" ||
+        name === "vehicleType"
       ) {
-        setError("All fields are required");
-        return;
+        return {
+          ...prev,
+          vehicle: { ...prev.vehicle, [name]: value },
+        };
       }
-    console.log("Captain Registered: ", formData);
-     try {
-       axios.post("http://localhost:4000/captain/register", formData);
-       alert("Captain Registered Successfully!");
-     } catch (err) {
-       setError(
-         err.response?.data?.message ||
-           "Something went wrong. Please try again."
-       );
-     }
+      return { ...prev, [name]: value };
+    });
+    };
 
-  };
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev)=>!prev);
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (
+      !formData.email ||
+      !formData.password ||
+      !formData.fullname.firstname ||
+      !formData.vehicle.capacity ||
+      !formData.vehicle.vehicleType ||
+      !formData.vehicle.plate
+        
+    ) {
+      setError("All fields are required");
+      return;
+    }
+    console.log("Captain Registered: ", formData);
+    try {
+      const response = await registerCaptain(formData);
+      if (response.status === 201) {
+        setCaptain(response.data);
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("captain", JSON.stringify(response.data.captain));
+        navigate("/CaptainHome");
+      }
+    } catch (err) {
+      setError(
+        err.response?.data?.message || "Something went wrong. Please try again."
+      );
+    }
+  }
 
   return (
     <div className="flex flex-col max-h-screen  bg-gray-100 ">
@@ -81,29 +119,44 @@ export default function CaptainSignup() {
               value={formData.email}
               onChange={handleChange}
             />
-            <InputField
-              type="password"
-              name="password"
-              placeholder="Password"
-              value={formData.password}
-              onChange={handleChange}
-            />
+            <div className="relative">
+              <InputField
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+                className="pr-10"
+              />
+              <ShowPasswordToggle
+                showPassword={showPassword}
+                toggle={togglePasswordVisibility}
+              />
+            </div>
             <div className="flex items-center   gap-5">
               <InputField
                 type="text"
-                name="vehicleColor"
+                name="color"
                 placeholder=" Color"
-                value={formData.vehicleColor}
+                value={formData.color}
                 onChange={handleChange}
               />
               <InputField
                 type="number"
-                name="vehicleCapacity"
+                name="capacity"
                 placeholder="Capacity"
-                value={formData.vehicleCapacity}
+                value={formData.capacity}
                 onChange={handleChange}
               />
             </div>
+            <InputField
+              type="text"
+
+              name="plate"
+              placeholder="Plate Number"
+              value={formData.plate}
+              onChange={handleChange}
+            />
             <div>
               <select
                 name="vehicleType"
@@ -145,4 +198,4 @@ export default function CaptainSignup() {
       </div>
     </div>
   );
-}
+  }
