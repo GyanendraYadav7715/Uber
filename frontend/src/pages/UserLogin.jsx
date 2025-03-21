@@ -17,17 +17,6 @@ const UserLogin = () => {
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
  
-
-  // Load user from localStorage on mount
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser && setUser(JSON.parse(storedUser));
-    }
-  }, []);
-
- 
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
